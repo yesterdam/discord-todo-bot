@@ -45,8 +45,15 @@ Rename the full project name while keeping the key the same.
 ### 🗂 Data Storage
 All tasks are stored in a simple `todo.txt` file with the format:
 ```
-project1: com-example-vision-ocr [ ]
-project2: internal-dashboard-api [x]
+TODO list (1/5 complete)
+
+1. [ ] project1: alpha-api
+2. [x] project2: beta-dashboard
+3. [ ] project3: gamma-core
+4. [ ] project4: delta-auth
+5. [ ] project5: epsilon-service
+
+Friday at 12:19 PM
 ```
 
 ### 🔐 Bot Token
