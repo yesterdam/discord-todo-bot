@@ -56,3 +56,6 @@ DISCORD_TOKEN=your_token_here
 ```
 
 Do not commit this file to version control.
+
+### Invite
+https://discord.com/oauth2/authorize?client_id=1372778050730725446&scope=bot&permissions=75776
