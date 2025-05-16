@@ -29,7 +29,9 @@ async def update_list_message(ctx):
     total = len(lines)
     done_count = sum(1 for line in lines if "[x]" in line)
 
-    content = f">>> **TODO list ({done_count}/{total} complete)**\n```txt\n"
+    content = f">>> **TODO list ({done_count}/{total} complete)**\n"
+    content += "[ ] = not started, [-] = in progress, [x] = done\n"
+    content += "```txt\n"
     for i, line in enumerate(lines, 1):
         content += f"{i}. {line}"
     content += f"```"
@@ -192,5 +194,18 @@ async def rename(ctx, key: str, *, new_name: str):
         f.writelines(updated)
     await update_list_message(ctx)
 
+@bot.command()
+async def todo(ctx):
+    await ctx.message.delete()
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_dir = "backup"
+    os.makedirs(backup_dir, exist_ok=True)
+
+    if os.path.exists(TODO_FILE):
+        os.rename(TODO_FILE, os.path.join(backup_dir, f"todo_{timestamp}.txt"))
+    if os.path.exists(LATEST_MESSAGE_FILE):
+        os.rename(LATEST_MESSAGE_FILE, os.path.join(backup_dir, f"latest_message_{timestamp}.txt"))
+
+    await ctx.send("🆕 เริ่ม TODO list ใหม่เรียบร้อยแล้วครับ (ย้ายข้อมูลเดิมไปที่โฟลเดอร์ backup)")
 
 bot.run(TOKEN)
