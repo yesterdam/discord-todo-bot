@@ -1,21 +1,28 @@
 import os
 from discord.ext import commands
 from dotenv import load_dotenv
+import discord
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-bot = commands.Bot(command_prefix='/', help_command=None)
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='/', help_command=None, intents=intents)
 
 TODO_FILE = "todo.txt"
+
 
 def ensure_file():
     if not os.path.exists(TODO_FILE):
         open(TODO_FILE, "w").close()
 
+
 @bot.event
 async def on_ready():
     print(f'✅ Logged in as {bot.user}')
+
 
 @bot.command()
 async def add(ctx, *, arg):
@@ -27,6 +34,7 @@ async def add(ctx, *, arg):
     with open(TODO_FILE, "a") as f:
         f.write(f"{key}: {name} [ ]\n")
     await ctx.send(f"✅ เพิ่มโปรเจกต์ `{key}`: `{name}` แล้วครับ")
+
 
 @bot.command()
 async def remove(ctx, *, key):
@@ -47,6 +55,7 @@ async def remove(ctx, *, key):
     else:
         await ctx.send(f"❌ ไม่พบโปรเจกต์ `{key}` ใน list ครับ")
 
+
 @bot.command()
 async def list(ctx):
     ensure_file()
@@ -56,6 +65,7 @@ async def list(ctx):
         await ctx.send("📂 ยังไม่มีโปรเจกต์ใน list เลยครับ")
     else:
         await ctx.send("📋 **รายการโปรเจกต์**\n" + "".join(lines))
+
 
 @bot.command()
 async def done(ctx, *, key):
@@ -77,6 +87,7 @@ async def done(ctx, *, key):
     else:
         await ctx.send(f"❌ ไม่พบโปรเจกต์ `{key}` ที่ยังไม่เสร็จครับ")
 
+
 @bot.command()
 async def rename(ctx, key: str, *, new_name: str):
     ensure_file()
@@ -97,5 +108,6 @@ async def rename(ctx, key: str, *, new_name: str):
         await ctx.send(f"✏️ เปลี่ยนชื่อโปรเจกต์ `{key}` เป็น `{new_name}` แล้วครับ")
     else:
         await ctx.send(f"❌ ไม่พบโปรเจกต์ `{key}` ใน list ครับ")
+
 
 bot.run(TOKEN)
