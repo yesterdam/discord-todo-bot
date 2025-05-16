@@ -5,27 +5,47 @@ A simple Discord bot for managing a shared TODO list within your team. Easily tr
 
 This bot helps your team manage a shared TODO list directly in Discord using simple commands.
 
-### ✅ Commands
+### ✅ Commands Overview
 
 #### `/add <key>: <project name>`
-Add a new project to the TODO list using a short key and full project name.
+Add or rename a project to the TODO list using a short key and full project name.
 
 **Example:**
 ```
 /add project1: com-example-vision-ocr
 ```
-
+---
 #### `/list`
-Show all projects in the TODO list with their current status.
+Show all projects in the TODO list with their current status. This command also resets the displayed message for a clean refresh.
 
+---
 #### `/done <key>`
-Mark the project as completed.
+Mark the project as completed. The bot will update the status to `[x]` and record the user who completed it.
 
 **Example:**
 ```
 /done project1
 ```
 
+---
+#### `/pending <key>`
+Mark the project as in progress. The bot will update the status to `[-]` and note the user responsible.
+
+**Example:**
+```
+/pending project1
+```
+
+---
+#### `/reject <key>`
+Revert the project status back to `[ ]` and remove any user attribution.
+
+**Example:**
+```
+/reject project1
+```
+
+---
 #### `/remove <key>`
 Remove a project from the list.
 
@@ -34,6 +54,7 @@ Remove a project from the list.
 /remove project1
 ```
 
+---
 #### `/rename <key> <new project name>`
 Rename the full project name while keeping the key the same.
 
@@ -42,6 +63,7 @@ Rename the full project name while keeping the key the same.
 /rename project1 com-example-new-ocr
 ```
 
+---
 ### 🗂 Data Storage
 All tasks are stored in a simple `todo.txt` file with the format:
 ```

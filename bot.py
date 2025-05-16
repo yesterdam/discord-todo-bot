@@ -90,12 +90,9 @@ async def remove(ctx, *, key):
     with open(TODO_FILE, "r") as f:
         lines = f.readlines()
     updated = []
-    found = False
     for line in lines:
-        if not line.startswith(f"{key}:"):
+        if f"{key}:" not in line:
             updated.append(line)
-        else:
-            found = True
     with open(TODO_FILE, "w") as f:
         f.writelines(updated)
     await update_list_message(ctx)
@@ -103,13 +100,16 @@ async def remove(ctx, *, key):
 
 @bot.command()
 async def list(ctx):
+    await ctx.message.delete()
     ensure_file()
     with open(TODO_FILE, "r") as f:
         lines = f.readlines()
     if not lines:
         await ctx.send("📂 ยังไม่มีโปรเจกต์ใน list เลยครับ")
     else:
-        await ctx.send("📋 **รายการโปรเจกต์**\n" + "".join(lines))
+        if os.path.exists(LATEST_MESSAGE_FILE):
+            os.remove(LATEST_MESSAGE_FILE)
+        await update_list_message(ctx)
 
 
 @bot.command()
@@ -119,11 +119,55 @@ async def done(ctx, *, key):
     with open(TODO_FILE, "r") as f:
         lines = f.readlines()
     updated = []
-    found = False
     for line in lines:
-        if f"{key}:" in line and "[ ]" in line:
-            updated.append(line.replace("[ ]", "[x]", 1))
-            found = True
+        if f"{key}:" in line and "[x]" not in line:
+            parts = line.strip().split(": ", 1)
+            if len(parts) == 2:
+                clean_part = parts[1].split(" (by")[0].strip()
+                updated.append(f"[x] {key}: {clean_part} (by {ctx.author.display_name})\n")
+            else:
+                updated.append(line)
+        else:
+            updated.append(line)
+    with open(TODO_FILE, "w") as f:
+        f.writelines(updated)
+    await update_list_message(ctx)
+
+@bot.command()
+async def reject(ctx, *, key):
+    await ctx.message.delete()
+    ensure_file()
+    with open(TODO_FILE, "r") as f:
+        lines = f.readlines()
+    updated = []
+    for line in lines:
+        if f"{key}:" in line and "[ ]" not in line:
+            parts = line.strip().split(": ", 1)
+            if len(parts) == 2:
+                clean_part = parts[1].split(" (by")[0].strip()
+                updated.append(f"[ ] {key}: {clean_part}\n")
+            else:
+                updated.append(line)
+        else:
+            updated.append(line)
+    with open(TODO_FILE, "w") as f:
+        f.writelines(updated)
+    await update_list_message(ctx)
+
+@bot.command()
+async def pending(ctx, *, key):
+    await ctx.message.delete()
+    ensure_file()
+    with open(TODO_FILE, "r") as f:
+        lines = f.readlines()
+    updated = []
+    for line in lines:
+        if f"{key}:" in line and "[x]" not in line and "[ ]" in line:
+            parts = line.strip().split(": ", 1)
+            if len(parts) == 2:
+                updated.append(f"[-] {key}: {parts[1]} (by {ctx.author.display_name})\n")
+            else:
+                updated.append(line)
         else:
             updated.append(line)
     with open(TODO_FILE, "w") as f:
@@ -138,12 +182,10 @@ async def rename(ctx, key: str, *, new_name: str):
     with open(TODO_FILE, "r") as f:
         lines = f.readlines()
     updated = []
-    found = False
     for line in lines:
         if f"{key}:" in line:
-            status = "[x]" if "[x]" in line else "[ ]"
-            updated.append(f"{key}: {new_name} {status}\n")
-            found = True
+            status = "[x]" if "[x]" in line else "[-]" if "[-]" in line else "[ ]"
+            updated.append(f"{status} {key}: {new_name}\n")
         else:
             updated.append(line)
     with open(TODO_FILE, "w") as f:
