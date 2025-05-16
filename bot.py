@@ -110,6 +110,10 @@ async def list(ctx):
         await ctx.send("📂 ยังไม่มีโปรเจกต์ใน list เลยครับ")
     else:
         if os.path.exists(LATEST_MESSAGE_FILE):
+            with open(LATEST_MESSAGE_FILE, "r") as f:
+                msg_id = int(f.read().strip())
+            old_msg = await ctx.channel.fetch_message(msg_id)
+            await old_msg.delete()
             os.remove(LATEST_MESSAGE_FILE)
         await update_list_message(ctx)
 
