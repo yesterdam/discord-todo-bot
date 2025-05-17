@@ -18,6 +18,10 @@ echo "🛑 Stopping old container (if exists)..."
 docker stop todo-bot 2>/dev/null
 docker rm todo-bot 2>/dev/null
 
+# ✅ 4.5 เตรียมไฟล์ที่จำเป็นถ้ายังไม่มี
+[ ! -f todo.txt ] && touch todo.txt
+[ ! -f latest_message.txt ] && touch latest_message.txt
+
 # ✅ 5. รันใหม่
 echo "🚀 Running TODO bot..."
 docker run -d \
@@ -25,5 +29,6 @@ docker run -d \
   --restart always \
   --env-file .env \
   -v "$(pwd)/todo.txt:/app/todo.txt" \
+  -v "$(pwd)/latest_message.txt:/app/latest_message.txt" \
   -v "$(pwd)/backup:/app/backup" \
   discord-todo-bot
