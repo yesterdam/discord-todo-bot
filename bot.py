@@ -1,4 +1,5 @@
 import os
+import shutil
 from datetime import datetime, timezone, timedelta
 
 import discord
@@ -127,11 +128,16 @@ async def list(ctx):
         await ctx.send("📂 ยังไม่มีโปรเจกต์ใน list เลยครับ")
     else:
         if os.path.exists(LATEST_MESSAGE_FILE):
-            with open(LATEST_MESSAGE_FILE, "r") as f:
-                msg_id = int(f.read().strip())
-            old_msg = await ctx.channel.fetch_message(msg_id)
-            await old_msg.delete()
-            os.remove(LATEST_MESSAGE_FILE)
+            try:
+                with open(LATEST_MESSAGE_FILE, "r") as f:
+                    msg_id = int(f.read().strip())
+                old_msg = await ctx.channel.fetch_message(msg_id)
+                await old_msg.delete()
+            except discord.NotFound:
+                pass
+            # Instead of removing the file, write empty message_id to avoid file lock issues
+            with open(LATEST_MESSAGE_FILE, "w") as f:
+                f.write("")
         await update_list_message(ctx)
 
 
@@ -223,9 +229,15 @@ async def todo(ctx):
     os.makedirs(backup_dir, exist_ok=True)
 
     if os.path.exists(TODO_FILE):
-        os.rename(TODO_FILE, os.path.join(backup_dir, f"todo_{timestamp}.txt"))
+        todo_backup = os.path.join(backup_dir, f"todo_{timestamp}.txt")
+        shutil.copy2(TODO_FILE, todo_backup)
+        with open(TODO_FILE, "w") as f:
+            f.write("")
     if os.path.exists(LATEST_MESSAGE_FILE):
-        os.rename(LATEST_MESSAGE_FILE, os.path.join(backup_dir, f"latest_message_{timestamp}.txt"))
+        msg_backup = os.path.join(backup_dir, f"latest_message_{timestamp}.txt")
+        shutil.copy2(LATEST_MESSAGE_FILE, msg_backup)
+        with open(LATEST_MESSAGE_FILE, "w") as f:
+            f.write("")
 
     await ctx.send("🆕 เริ่ม TODO list ใหม่เรียบร้อยแล้วครับ (ย้ายข้อมูลเดิมไปที่โฟลเดอร์ backup)")
 
