@@ -1,8 +1,8 @@
 import os
-from discord.ext import commands
-from dotenv import load_dotenv
-import discord
 from datetime import datetime, timezone, timedelta
+
+import discord
+from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
