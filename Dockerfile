@@ -5,8 +5,9 @@ LABEL authors="ichitunkk"
 # Set working directory
 WORKDIR /app
 
-# Copy project files
-COPY . .
+# Copy only necessary files
+COPY bot.py .
+COPY requirements.txt .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt

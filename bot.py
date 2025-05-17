@@ -2,7 +2,7 @@ import os
 from discord.ext import commands
 from dotenv import load_dotenv
 import discord
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -52,7 +52,7 @@ async def update_list_message(ctx):
     for i, line in enumerate(lines, 1):
         content += f"{i}. {line}"
     content += f"```"
-    timestamp = datetime.now().strftime("%A at %I:%M %p")
+    timestamp = (datetime.now(timezone(timedelta(hours=7)))).strftime("%A at %I:%M %p")
     content += f"\n{timestamp}"
 
     try:
