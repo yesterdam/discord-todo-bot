@@ -10,7 +10,24 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='/', help_command=None, intents=intents)
+from discord.ext import commands
+
+class MyHelpCommand(commands.HelpCommand):
+    async def send_bot_help(self, mapping):
+        help_text = (
+            ">>> **TODO Bot Commands**\n\n"
+            "`/add <key>: <name>` - เพิ่มหรือแก้ไขโปรเจกต์\n"
+            "`/done <key>` - ทำเครื่องหมายว่าเสร็จแล้ว\n"
+            "`/pending <key>` - กำลังดำเนินการ\n"
+            "`/reject <key>` - กลับไปยังสถานะเริ่มต้น\n"
+            "`/remove <key>` - ลบโปรเจกต์ออก\n"
+            "`/rename <key> <name>` - เปลี่ยนชื่อโปรเจกต์\n"
+            "`/list` - แสดงรายการทั้งหมด\n"
+            "`/todo` - เริ่ม todo ใหม่ (ย้ายข้อมูลเก่าไป backup)\n"
+        )
+        await self.get_destination().send(help_text)
+
+bot = commands.Bot(command_prefix='/', intents=intents, help_command=MyHelpCommand())
 
 TODO_FILE = "todo.txt"
 LATEST_MESSAGE_FILE = "latest_message.txt"
