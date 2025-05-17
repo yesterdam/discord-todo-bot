@@ -85,3 +85,23 @@ DISCORD_TOKEN=your_token_here
 ```
 
 Do not commit this file to version control.
+
+### 🐳 Docker Build & Run
+
+You can run the bot using Docker:
+
+#### 🔨 Build the image
+```bash
+docker build -t discord-todo-bot .
+```
+
+#### 🚀 Run the container
+```bash
+docker run --rm -e DISCORD_TOKEN=your_token_here discord-todo-bot
+```
+
+- Replace `your_token_here` with your actual bot token.
+- To persist data, you can mount a volume:
+```bash
+docker run --rm -e DISCORD_TOKEN=your_token_here -v $(pwd)/todo.txt:/app/todo.txt discord-todo-bot
+```
